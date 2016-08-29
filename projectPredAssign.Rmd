@@ -7,7 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Import necessary libarires 
+# Import necessary libraries  
 ```{r include=TRUE}
 library(caret)
 library(rpart)
@@ -17,7 +17,7 @@ library(corrplot)
 ```
 
 # Get Data
-## Download and save data for training and testing if it does not already exist.
+### Download and save data for training and testing if it does not already exist.
 ```{r include=TRUE}
 trainUrl <-"https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
 testUrl <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
@@ -34,7 +34,7 @@ if (!file.exists(testFile)) {
 }
 ```
 
-## Take the downloaded data and convert it into data into data frames.
+### Take the downloaded data and convert it into data into data frames.
 ```{r include=TRUE}
 trainRaw <- read.csv("./data/pml-training.csv")
 testRaw <- read.csv("./data/pml-testing.csv")
@@ -49,20 +49,20 @@ dim(testRaw)
 
 
 # Clean the data
-## Clean the data and get rid of observations with empty/missing values as well  meaningless data.
+### Clean the data and get rid of observations with empty/missing values as well  meaningless data.
 
 ```{r include=TRUE}
 sum(complete.cases(trainRaw))
 ```
 
-## Remove columns that contain NA values.
+### Remove columns that contain NA values.
 
 ```{r}
 trainRaw <- trainRaw[, colSums(is.na(trainRaw)) == 0] 
 testRaw <- testRaw[, colSums(is.na(testRaw)) == 0] 
 
 ```
-## Get rid of columns that do not have good accelerometer measurements.
+### Get rid of columns that do not have good accelerometer measurements.
 ```{r}
 classe <- trainRaw$classe
 trainRemove <- grepl("^X|timestamp|window", names(trainRaw))
@@ -74,14 +74,14 @@ testRaw <- testRaw[, !testRemove]
 testCleaned <- testRaw[, sapply(testRaw, is.numeric)]
 ```
 
-## The cleaned training set contains 19622 observations with 53 covariants. Testing set contains 20 observations and 53 variables. The required variable "classe" is still in the cleaned training set.
+### The cleaned training set contains 19622 observations with 53 covariants. Testing set contains 20 observations and 53 variables. The required variable "classe" is still in the cleaned training set.
 
 
 
 
 # Perform data slicing
 
-## Split the cleaned training set into a training set (70%) and a validation data set (30%). Validation data set used to conduct cross validation in later steps.
+### Split the cleaned training set into a training set (70%) and a validation data set (30%). Validation data set used to conduct cross validation in later steps.
 
 ```{r}
 set.seed(22519) # random see that is resued for reproducibile purpose
@@ -91,14 +91,15 @@ testData <- trainCleaned[-inTrain, ]
 ```
 
 # Data Modeling
-## We fit a predictive model for activity recognition using Random Forest algorithm because it automatically selects important variables. It is also good when comparing correlated covariates and outliers in general. A 5-fold cross validation is when applying the algorithm.
+### We fit a predictive model for activity recognition using Random Forest algorithm because it automatically selects important variables. It is also good when comparing correlated covariates and outliers in general. 
+### A 5-fold cross validation is when applying the algorithm.
 ```{r}
 controlRf <- trainControl(method="cv", 5)
 modelRf <- train(classe ~ ., data=trainData, method="rf", trControl=controlRf, ntree=250)
 modelRf
 
 ```
-## Estimate the performance of the model on the validation data set.
+### Estimate the performance of the model on the validation data set.
 ```{r}
 predictRf <- predict(modelRf, testData)
 confusionMatrix(testData$classe, predictRf)
@@ -114,12 +115,13 @@ myoose
 ```
 
 
-## The estimated accuracy of the model is very high! Its approximatley 99.% and the estimated out-of-sample error is 0.58%.
+### The estimated accuracy of the model is very high! Its approximatley 99.% and the estimated out-of-sample error is 0.58%. The expectation is that that model will few to no misclassifications.
+
 
 # Predicting for Test Data Set
 
-## Model is applied to the original testing set. 
-## The problem_id column is removed from the data set.
+### Model is applied to the original testing set. 
+### The problem_id column is removed from the data set.
 ```{r}
 result <- predict(modelRf, testCleaned[, -length(names(testCleaned))])
 result

@@ -119,8 +119,8 @@ $(document).ready(function () {
 </div>
 
 
-<div id="import-necessary-libarires" class="section level1">
-<h1>Import necessary libarires</h1>
+<div id="import-necessary-libraries" class="section level1">
+<h1>Import necessary libraries</h1>
 <pre class="r"><code>library(caret)</code></pre>
 <pre><code>## Loading required package: lattice</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
@@ -138,8 +138,8 @@ library(randomForest)</code></pre>
 </div>
 <div id="get-data" class="section level1">
 <h1>Get Data</h1>
-<div id="download-and-save-data-for-training-and-testing-if-it-does-not-already-exist." class="section level2">
-<h2>Download and save data for training and testing if it does not already exist.</h2>
+<div id="download-and-save-data-for-training-and-testing-if-it-does-not-already-exist." class="section level3">
+<h3>Download and save data for training and testing if it does not already exist.</h3>
 <pre class="r"><code>trainUrl &lt;-&quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv&quot;
 testUrl &lt;- &quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv&quot;
 trainFile &lt;- &quot;./data/pml-training.csv&quot;
@@ -154,8 +154,8 @@ if (!file.exists(testFile)) {
   download.file(testUrl, destfile=testFile, method=&quot;curl&quot;)
 }</code></pre>
 </div>
-<div id="take-the-downloaded-data-and-convert-it-into-data-into-data-frames." class="section level2">
-<h2>Take the downloaded data and convert it into data into data frames.</h2>
+<div id="take-the-downloaded-data-and-convert-it-into-data-into-data-frames." class="section level3">
+<h3>Take the downloaded data and convert it into data into data frames.</h3>
 <pre class="r"><code>trainRaw &lt;- read.csv(&quot;./data/pml-training.csv&quot;)
 testRaw &lt;- read.csv(&quot;./data/pml-testing.csv&quot;)
 dim(trainRaw)</code></pre>
@@ -166,18 +166,18 @@ dim(trainRaw)</code></pre>
 </div>
 <div id="clean-the-data" class="section level1">
 <h1>Clean the data</h1>
-<div id="clean-the-data-and-get-rid-of-observations-with-emptymissing-values-as-well-meaningless-data." class="section level2">
-<h2>Clean the data and get rid of observations with empty/missing values as well meaningless data.</h2>
+<div id="clean-the-data-and-get-rid-of-observations-with-emptymissing-values-as-well-meaningless-data." class="section level3">
+<h3>Clean the data and get rid of observations with empty/missing values as well meaningless data.</h3>
 <pre class="r"><code>sum(complete.cases(trainRaw))</code></pre>
 <pre><code>## [1] 406</code></pre>
 </div>
-<div id="remove-columns-that-contain-na-values." class="section level2">
-<h2>Remove columns that contain NA values.</h2>
+<div id="remove-columns-that-contain-na-values." class="section level3">
+<h3>Remove columns that contain NA values.</h3>
 <pre class="r"><code>trainRaw &lt;- trainRaw[, colSums(is.na(trainRaw)) == 0] 
 testRaw &lt;- testRaw[, colSums(is.na(testRaw)) == 0] </code></pre>
 </div>
-<div id="get-rid-of-columns-that-do-not-have-good-accelerometer-measurements." class="section level2">
-<h2>Get rid of columns that do not have good accelerometer measurements.</h2>
+<div id="get-rid-of-columns-that-do-not-have-good-accelerometer-measurements." class="section level3">
+<h3>Get rid of columns that do not have good accelerometer measurements.</h3>
 <pre class="r"><code>classe &lt;- trainRaw$classe
 trainRemove &lt;- grepl(&quot;^X|timestamp|window&quot;, names(trainRaw))
 trainRaw &lt;- trainRaw[, !trainRemove]
@@ -187,14 +187,14 @@ testRemove &lt;- grepl(&quot;^X|timestamp|window&quot;, names(testRaw))
 testRaw &lt;- testRaw[, !testRemove]
 testCleaned &lt;- testRaw[, sapply(testRaw, is.numeric)]</code></pre>
 </div>
-<div id="the-cleaned-training-set-contains-19622-observations-with-53-covariants.-testing-set-contains-20-observations-and-53-variables.-the-required-variable-classe-is-still-in-the-cleaned-training-set." class="section level2">
-<h2>The cleaned training set contains 19622 observations with 53 covariants. Testing set contains 20 observations and 53 variables. The required variable “classe” is still in the cleaned training set.</h2>
+<div id="the-cleaned-training-set-contains-19622-observations-with-53-covariants.-testing-set-contains-20-observations-and-53-variables.-the-required-variable-classe-is-still-in-the-cleaned-training-set." class="section level3">
+<h3>The cleaned training set contains 19622 observations with 53 covariants. Testing set contains 20 observations and 53 variables. The required variable “classe” is still in the cleaned training set.</h3>
 </div>
 </div>
 <div id="perform-data-slicing" class="section level1">
 <h1>Perform data slicing</h1>
-<div id="split-the-cleaned-training-set-into-a-training-set-70-and-a-validation-data-set-30.-validation-data-set-used-to-conduct-cross-validation-in-later-steps." class="section level2">
-<h2>Split the cleaned training set into a training set (70%) and a validation data set (30%). Validation data set used to conduct cross validation in later steps.</h2>
+<div id="split-the-cleaned-training-set-into-a-training-set-70-and-a-validation-data-set-30.-validation-data-set-used-to-conduct-cross-validation-in-later-steps." class="section level3">
+<h3>Split the cleaned training set into a training set (70%) and a validation data set (30%). Validation data set used to conduct cross validation in later steps.</h3>
 <pre class="r"><code>set.seed(22519) # random see that is resued for reproducibile purpose
 inTrain &lt;- createDataPartition(trainCleaned$classe, p=0.70, list=F)
 trainData &lt;- trainCleaned[inTrain, ]
@@ -203,8 +203,11 @@ testData &lt;- trainCleaned[-inTrain, ]</code></pre>
 </div>
 <div id="data-modeling" class="section level1">
 <h1>Data Modeling</h1>
-<div id="we-fit-a-predictive-model-for-activity-recognition-using-random-forest-algorithm-because-it-automatically-selects-important-variables.-it-is-also-good-when-comparing-correlated-covariates-and-outliers-in-general.-a-5-fold-cross-validation-is-when-applying-the-algorithm." class="section level2">
-<h2>We fit a predictive model for activity recognition using Random Forest algorithm because it automatically selects important variables. It is also good when comparing correlated covariates and outliers in general. A 5-fold cross validation is when applying the algorithm.</h2>
+<div id="we-fit-a-predictive-model-for-activity-recognition-using-random-forest-algorithm-because-it-automatically-selects-important-variables.-it-is-also-good-when-comparing-correlated-covariates-and-outliers-in-general." class="section level3">
+<h3>We fit a predictive model for activity recognition using Random Forest algorithm because it automatically selects important variables. It is also good when comparing correlated covariates and outliers in general.</h3>
+</div>
+<div id="a-5-fold-cross-validation-is-when-applying-the-algorithm." class="section level3">
+<h3>A 5-fold cross validation is when applying the algorithm.</h3>
 <pre class="r"><code>controlRf &lt;- trainControl(method=&quot;cv&quot;, 5)
 modelRf &lt;- train(classe ~ ., data=trainData, method=&quot;rf&quot;, trControl=controlRf, ntree=250)
 modelRf</code></pre>
@@ -227,8 +230,8 @@ modelRf</code></pre>
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was mtry = 27.</code></pre>
 </div>
-<div id="estimate-the-performance-of-the-model-on-the-validation-data-set." class="section level2">
-<h2>Estimate the performance of the model on the validation data set.</h2>
+<div id="estimate-the-performance-of-the-model-on-the-validation-data-set." class="section level3">
+<h3>Estimate the performance of the model on the validation data set.</h3>
 <pre class="r"><code>predictRf &lt;- predict(modelRf, testData)
 confusionMatrix(testData$classe, predictRf)</code></pre>
 <pre><code>## Confusion Matrix and Statistics
@@ -270,17 +273,17 @@ accuracy</code></pre>
 myoose</code></pre>
 <pre><code>## [1] 0.006117247</code></pre>
 </div>
-<div id="the-estimated-accuracy-of-the-model-is-very-high-its-approximatley-99.-and-the-estimated-out-of-sample-error-is-0.58." class="section level2">
-<h2>The estimated accuracy of the model is very high! Its approximatley 99.% and the estimated out-of-sample error is 0.58%.</h2>
+<div id="the-estimated-accuracy-of-the-model-is-very-high-its-approximatley-99.-and-the-estimated-out-of-sample-error-is-0.58.-the-expectation-is-that-that-model-will-few-to-no-misclassifications." class="section level3">
+<h3>The estimated accuracy of the model is very high! Its approximatley 99.% and the estimated out-of-sample error is 0.58%. The expectation is that that model will few to no misclassifications.</h3>
 </div>
 </div>
 <div id="predicting-for-test-data-set" class="section level1">
 <h1>Predicting for Test Data Set</h1>
-<div id="model-is-applied-to-the-original-testing-set." class="section level2">
-<h2>Model is applied to the original testing set.</h2>
+<div id="model-is-applied-to-the-original-testing-set." class="section level3">
+<h3>Model is applied to the original testing set.</h3>
 </div>
-<div id="the-problem_id-column-is-removed-from-the-data-set." class="section level2">
-<h2>The problem_id column is removed from the data set.</h2>
+<div id="the-problem_id-column-is-removed-from-the-data-set." class="section level3">
+<h3>The problem_id column is removed from the data set.</h3>
 <pre class="r"><code>result &lt;- predict(modelRf, testCleaned[, -length(names(testCleaned))])
 result</code></pre>
 <pre><code>##  [1] B A B A A E D B A A B C B A E E A B B B
